@@ -5,14 +5,16 @@ import json
 class Mongodb:
     host: str
     port: str
+    dbname:str
     collection: str
 
     @staticmethod
     def from_dict(obj: Any) -> 'Mongodb':
         _host = str(obj.get("host"))
         _port = str(obj.get("port"))
+        _dbname=str(obj.get("dbname"))
         _collection = str(obj.get("collection"))
-        return Mongodb(_host, _port, _collection)
+        return Mongodb(_host, _port, _dbname,_collection)
 
 @dataclass
 class Postgres:
@@ -56,7 +58,7 @@ class Root:
         _mongodb = Mongodb.from_dict(obj.get("mongodb"))
         return Root(_server, _postgres, _mongodb)
 
-with open("C:\VGBPython\graphql-flask\\flask2\\flaskServer2\config.json") as config_file:
+with open("C:\VGBPython\graphql-flask\\flask2\\djangoServer2\config.json") as config_file:
     parsed_json=json.load(config_file)
 conf=Root.from_dict(parsed_json)
 
@@ -80,3 +82,17 @@ mongoUrl = (
     + conf.mongodb.port
     + "/" 
     + conf.mongodb.collection)
+
+mongoSchema={
+    "product_id":"int",
+    "category":"text",
+    "industry":"text",
+    "business_scale":"text",
+    "user_type":"text",
+    "no_of_users":"text",
+    "deployment":"text",
+    "os":"text",
+    "mobile_apps":"text",
+    "pricing":"text",
+    "rating":"text",
+}
