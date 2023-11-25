@@ -1,5 +1,5 @@
-from django.http import HttpResponse
-from .models import collection
+from django.http import HttpResponse,JsonResponse
+from .models import InitMongoDB
 
-def sayHello(request):
-    return HttpResponse(collection.count_documents({}))
+coll=InitMongoDB()
+
