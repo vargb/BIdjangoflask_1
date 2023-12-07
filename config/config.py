@@ -36,12 +36,14 @@ class Postgres:
 class Server:
     host: str
     port: str
+    webhook:str
 
     @staticmethod
     def from_dict(obj: Any) -> 'Server':
         _host = str(obj.get("host"))
         _port = str(obj.get("port"))
-        return Server(_host, _port)
+        _webhook=str(obj.get("webhookUrl"))
+        return Server(_host, _port,_webhook)
     
 @dataclass
 class Root:

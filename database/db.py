@@ -1,11 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
-from pymongo import MongoClient
-from config import config
+from flask import current_app,request
+import requests
+from config.config import conf
+from sqlalchemy import event
 import hashlib
 
 postgredb = SQLAlchemy()
-mongo=MongoClient(config.mongoUrl)
-mongodb=mongo.visualizer
+
 
 class Models(postgredb.Model):
     __abstract__ = True
@@ -44,7 +45,39 @@ class BiModel(Models):
         
     def __repr__(self):
         return f"<BI {self.product_id}>"
+
+@event.listens_for(BiModel,"after_insert")
+def insert_change(mapper,connection,target):
+    current_app.logger.info("insert changes detected")
+    requestWebhook("insert_changes")
     
+@event.listens_for(BiModel,"after_update")
+def update_change(mapper,connection,target):
+    current_app.logger.info("update changes detected")
+    requestWebhook("update_changes")
+    
+@event.listens_for(BiModel,"after_delete")
+def delete_change(mapper,connection,target):
+    current_app.logger.info("delete changes detected")
+    requestWebhook("delete_changes")
+ 
 def encrypt_string(hash_string):
     sha_signature = hashlib.sha256(hash_string.encode()).hexdigest()
     return sha_signature
+
+def requestWebhook(changeType:str):
+    webhookUrl=request.json.get("webhook-url") if request.json else conf.server.webhook
+    payload={
+        changeType:BiModel.__name__
+    }
+    try:
+        res=requests.post(webhookUrl,json=payload)
+        
+        if res.status_code==200:
+            current_app.logger.info("Webhook triggered successfully")
+            return
+        else:
+            current_app.logger.info("hook aint in web ",res.status_code)
+    except Exception as e:
+        current_app.logger.error("yo somethin wrong fam ",e)
+        return 

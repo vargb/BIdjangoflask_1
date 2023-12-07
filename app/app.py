@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, logging
 from flask_migrate import Migrate
 from database import db, graphql
 import csv
@@ -10,7 +10,9 @@ from graphql import GraphQLError
 
 def server(srv:Flask)->Flask:
     db.postgredb.init_app(srv)
-    mongoCollection = db.mongodb.analysis
+    with srv.app_context():
+        loggy=logging.create_logger(srv)
+    
     migrate=Migrate(srv,db.postgredb)
     
     @srv.route("/uploadCSV",methods=["POST"])
@@ -26,6 +28,7 @@ def server(srv:Flask)->Flask:
             for row in csv_reader:
                 data=db.BiModel(product_id=row[0],category=row[1],industry=row[2],business_scale=row[3],user_type=row[4],no_of_users=row[5],deployment=row[6],os=row[7],mobile_apps=row[8],pricing=row[9],rating=row[10],id=db.encrypt_string(row[0]))
                 db.postgredb.session.add(data)
+            loggy.info("uploading to DB...")
             db.postgredb.session.commit()
             return jsonify({"HeadsUp":"CSV imported to database"}),200
     
