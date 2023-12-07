@@ -48,7 +48,7 @@ class BiModel(Models):
 
 @event.listens_for(BiModel,"after_insert")
 def insert_change(mapper,connection,target):
-    current_app.logger.info("insert changes detected",BiModel.__name__)
+    current_app.logger.info("insert changes detected")
     requestWebhook("insert_changes")
     
 @event.listens_for(BiModel,"after_update")
@@ -66,13 +66,12 @@ def encrypt_string(hash_string):
     return sha_signature
 
 def requestWebhook(changeType:str):
-    webhookUrl=request.json.get("webhook-url") if request.json else conf.server.webhook
     payload={
         "changeType":changeType,
-        "model":BiModel.__name__
+        "model":BiModel.__tablename__
     }
     try:
-        res=requests.post(webhookUrl,json=payload)
+        res=requests.post(conf.server.webhook,json=payload)
         
         if res.status_code==200:
             current_app.logger.info("Webhook triggered successfully")
@@ -80,5 +79,5 @@ def requestWebhook(changeType:str):
         else:
             current_app.logger.info("hook aint in web ",res.status_code)
     except Exception as e:
-        current_app.logger.error("yo somethin wrong fam ",e)
+        current_app.logger.error("yo somethin wrong fam",e)
         return 
