@@ -48,7 +48,7 @@ class BiModel(Models):
 
 @event.listens_for(BiModel,"after_insert")
 def insert_change(mapper,connection,target):
-    current_app.logger.info("insert changes detected")
+    current_app.logger.info("insert changes detected",BiModel.__name__)
     requestWebhook("insert_changes")
     
 @event.listens_for(BiModel,"after_update")
@@ -68,7 +68,8 @@ def encrypt_string(hash_string):
 def requestWebhook(changeType:str):
     webhookUrl=request.json.get("webhook-url") if request.json else conf.server.webhook
     payload={
-        changeType:BiModel.__name__
+        "changeType":changeType,
+        "model":BiModel.__name__
     }
     try:
         res=requests.post(webhookUrl,json=payload)

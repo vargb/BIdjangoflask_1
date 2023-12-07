@@ -31,4 +31,5 @@ type Mutation {
     pricing: String!
     rating: String!
   ): BiData
+  deletebyID(product_Id: Int!): String
 }

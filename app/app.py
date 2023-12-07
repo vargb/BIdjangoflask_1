@@ -65,6 +65,7 @@ def getGraphqlSchema(schemaPath:str):
     mutation=MutationType()
     
     mutation.set_field("Upload", graphql.resolve_Upload)
+    mutation.set_field("deletebyID",graphql.resolve_deletebyID)
     
     query.set_field("getbyID",graphql.resolve_getbyID)
     query.set_field("getbyCategory",graphql.resolve_getbyCategory)

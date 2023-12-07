@@ -89,3 +89,15 @@ def resolve_Upload(_, info, product_Id,category,industry,business_scale,user_typ
             return GraphQLError("Product ID already present!")
     except Exception as e:
         raise GraphQLError(f"Error in uploading - {str(e)}")
+
+def resolve_deletebyID(_,info,product_Id):
+    try:
+        data=BiModel.query.filter_by(product_id=product_Id).first()
+        if data:
+            postgredb.session.delete(data)
+            postgredb.session.commit()
+            return f"Data with ID {product_Id} deleted successfully"
+        else:
+            return f"No data found for ID {product_Id}, deletion failed"
+    except Exception as e:
+        return f"Error: {str(e)}"
