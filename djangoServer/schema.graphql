@@ -1,0 +1,34 @@
+type BiData {
+  product_Id: Int!
+  category: String!
+  industry: String!
+  business_scale: String!
+  user_type: String!
+  no_of_users: String!
+  deployment: String!
+  os: String!
+  mobile_apps: String!
+  pricing: String!
+  rating: String!
+}
+
+type Query {
+  getbyID(product_Id: Int!): BiData
+  getbyCategory(category: String!): [BiData]
+}
+
+type Mutation {
+  Upload(
+    product_Id: Int!
+    category: String!
+    industry: String!
+    business_scale: String!
+    user_type: String!
+    no_of_users: String!
+    deployment: String!
+    os: String!
+    mobile_apps: String!
+    pricing: String!
+    rating: String!
+  ): BiData
+}

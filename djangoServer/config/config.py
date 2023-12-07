@@ -58,7 +58,7 @@ class Root:
         _mongodb = Mongodb.from_dict(obj.get("mongodb"))
         return Root(_server, _postgres, _mongodb)
 
-with open("C:\VGBPython\graphql-flask\\flask2\\djangoServer2\config.json") as config_file:
+with open("C:\VGBPython\graphql-flask\\flask2\\djangoServer2\djangoServer\config.json") as config_file:
     parsed_json=json.load(config_file)
 conf=Root.from_dict(parsed_json)
 
