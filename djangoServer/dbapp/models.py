@@ -1,5 +1,7 @@
 from django.db import models
 import logging
+from config.config import conf
+import pymongo
 
 loggy=logging.getLogger(__name__)
 
@@ -20,3 +22,7 @@ class BiModel(models.Model):
     
     class Meta():
         db_table="bimodel"
+
+client = pymongo.MongoClient('mongodb://'+conf.mongodb.host+":"+conf.mongodb.port+"/")
+db = client[conf.mongodb.dbname]
+collection = db[conf.mongodb.collection]
